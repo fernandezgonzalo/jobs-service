@@ -1,4 +1,4 @@
-from pydantic import BaseModel, UUID4, NonNegativeInt
+from pydantic import BaseModel, NonNegativeInt
 
 
 class JobIn(BaseModel):

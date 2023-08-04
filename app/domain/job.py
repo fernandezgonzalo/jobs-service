@@ -1,8 +1,8 @@
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 
 
 class Dictable:
-    def dict(self):
+    def to_dict(self):
         return asdict(self)
 
 
@@ -12,4 +12,3 @@ class Job(Dictable):
     country: str
     salary: int
     skills: list[str]
-

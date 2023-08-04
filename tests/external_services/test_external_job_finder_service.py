@@ -36,10 +36,13 @@ def test__get_without_filters(external_job_finder):
 
 def test__get_with_filters(external_job_finder):
     filters = JobFilters(name="sr python")
+    sanitized_filters = {
+        "name": "sr python"
+    }
 
     with patch.object(httpx, "get") as mock_method:
         result = external_job_finder._get(url="test", filters=filters)
-        mock_method.assert_called_with("test", filters)
+        mock_method.assert_called_with("test", sanitized_filters)
 
 
 def test__get_http_error(httpx_mock, external_job_finder):
