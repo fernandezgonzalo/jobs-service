@@ -11,6 +11,9 @@ lint:
 ruff:
 	poetry run ruff app
 
+fix-ruff:
+	poetry run ruff --fix app
+
 test:  ## Run tests
 	ENDPOINT_EXTRA_SOURCE_SERVICE=http://test poetry run pytest -vv .
 
