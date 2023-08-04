@@ -1,5 +1,5 @@
 from typing import Protocol, Optional
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, asdict
 from urllib.parse import urljoin
 
 import httpx
@@ -25,22 +25,33 @@ class ExternalJobFinderService(Protocol):
     def get_jobs(self, job_filters: JobFilters) -> [Job]: ...
 
 
+class JobFinderServiceError(Exception):
+    pass
+
+
 class JobberwockyExtraSource:
     def __init__(self, service_url: str):
         self.service_url = service_url
+
+    def _get(self, url: str, filters: Optional[JobFilters] = None) -> dict:
+        try:
+            if filters:
+                sanitized_filters = self._sanitize_filters(filters)
+                response = httpx.get(url, filters)
+            else:
+                response = httpx.get(url)
+            return response.json()
+        except httpx.HTTPError as e:
+            raise JobFinderServiceError()
 
     def get_jobs(self, job_filters: Optional[JobFilters] = None) -> [Job]:
         endpoint_name = "jobs"
         url = urljoin(self.service_url, endpoint_name)
         
-        if job_filters is not None:
-            filters = self._sanitize_filters(job_filters)
-            response = httpx.get(url, params=filters).json()
-        else:
-            response = httpx.get(url).json()
+        external_jobs = self._get(url, job_filters)
 
         jobs = []
-        for job_row in response:
+        for job_row in external_jobs:
             job_name = job_row[0]
             job_salary = job_row[1]
             job_country = job_row[2]
