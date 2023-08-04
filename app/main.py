@@ -26,7 +26,7 @@ def get_jobs(repository: Annotated[JobRepository, Depends(get_job_repository)]):
 
 
 @app.get("/aggregated-jobs", response_model=list[JobOut])
-def agregated_jobs(
+def aggregated_jobs(
     service: Annotated[ExternalJobFinderService, Depends(get_external_job_finder_service)],
     repository: Annotated[JobRepository, Depends(get_job_repository)] 
 ):
