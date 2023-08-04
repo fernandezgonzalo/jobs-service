@@ -1,9 +1,15 @@
-from app.services.external_job_finder_service import JobberwockyExtraSource, Job, JobFilters
+from app.services.external_job_finder_service import JobberwockyExtraSource, Job, JobFilters, JobFinderServiceError
+from unittest.mock import patch
 
+import httpx
+import pytest
 
-service = JobberwockyExtraSource(
-    "test_url"
-)
+@pytest.fixture
+def external_job_finder():
+    service = JobberwockyExtraSource("http://test_url")
+
+    return service
+
 
 dummy_jobs = [
     ['Jr Java Developer', 24000, 'Argentina', ['Java', 'OOP']],
@@ -20,12 +26,31 @@ dummy_jobs = [
     ['Ruby Developer', 34000, 'Argentina', ['Ruby', 'OOP']]
 ]
 
-def get_jobs(httpx_mock):
-    httpx_mock.add_response(json=dummy_jobs)
+def test__get_without_filters(external_job_finder):
+    filters = None
 
-    service = JobberwockyExtraSource("test_url")
+    with patch.object(httpx, "get") as mock_method:
+        result = external_job_finder._get(url="test", filters=filters)
+        mock_method.assert_called_with("test")
 
-    jobs = service.get_jobs()
 
-    assert len(jobs) == len(dummy_jobs)
-    assert all(isinstance(job, Job) for job in jobs)
+def test__get_with_filters(external_job_finder):
+    filters = JobFilters(name="sr python")
+
+    with patch.object(httpx, "get") as mock_method:
+        result = external_job_finder._get(url="test", filters=filters)
+        mock_method.assert_called_with("test", filters)
+
+
+def test__get_http_error(httpx_mock, external_job_finder):
+    httpx_mock.add_exception(httpx.ReadTimeout("Unable to read within timeout"))
+
+    with pytest.raises(JobFinderServiceError):
+        external_job_finder._get(url="http://test", filters=None)
+
+
+def test_get_jobs(external_job_finder):
+    with patch.object(external_job_finder, "_get", return_value=dummy_jobs):
+        jobs = external_job_finder.get_jobs()
+        assert len(jobs) == len(dummy_jobs)
+        assert all(isinstance(job, Job) for job in jobs)
