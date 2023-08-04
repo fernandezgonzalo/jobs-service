@@ -31,7 +31,7 @@ class JobRepository(Protocol):
         """
         ...
 
-    def get_all_jobs(self) -> list[Job]:
+    def get_jobs(self) -> list[Job]:
         """Retrieve all jobs from the repository.
 
         Returns:
@@ -71,7 +71,7 @@ class InMemoryJobRepository:
         """
         self.storage.add(job.model_dump())
 
-    def get_all_jobs(self) -> list[Job]:
+    def get_jobs(self) -> list[Job]:
         """Retrieve all jobs from the repository.
 
         Returns:

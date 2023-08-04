@@ -2,12 +2,15 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI
 
-from app.dependencies import get_external_job_finder_service, get_job_repository
+from app.dependencies import (
+    get_job_finder_aggregator,
+    get_job_repository,
+)
 from app.repository.repository import JobRepository
 from app.services.external_job_finder_service import (
-    ExternalJobFinderService,
     JobFinderServiceError,
 )
+from app.services.job_finder_aggregator import JobFinderAgreggator
 
 from .schemas import JobIn, JobOut
 
@@ -100,10 +103,7 @@ def get_jobs(repository: Annotated[JobRepository, Depends(get_job_repository)]):
 
 @app.get("/aggregated-jobs", response_model=list[JobOut])
 def aggregated_jobs(
-    service: Annotated[
-        ExternalJobFinderService, Depends(get_external_job_finder_service)
-    ],
-    repository: Annotated[JobRepository, Depends(get_job_repository)],
+    service: Annotated[JobFinderAgreggator, Depends(get_job_finder_aggregator)],
 ):
     """Endpoint to retrieve aggregated jobs from multiple sources.
 
@@ -112,8 +112,7 @@ def aggregated_jobs(
     and the provided JobRepository instance to fetch jobs from the repository.
 
     Args:
-        service (ExternalJobFinderService): The ExternalJobFinderService instance used to fetch jobs from the external service.
-        repository (JobRepository): The JobRepository instance used to fetch jobs from the repository.
+        service (JobFinderAgreggator): The JobFinderAgreggator instance used to fetch jobs from the external services.
 
     Returns:
         list[JobOut]: A list of JobOut models representing all the aggregated jobs from both sources.
@@ -144,9 +143,8 @@ def aggregated_jobs(
 
     """
     try:
-        extra_sources_jobs = service.get_jobs()
+        jobs = service.get_jobs()
     except JobFinderServiceError:
-        extra_sources_jobs = []
-    jobs = repository.get_all_jobs()
+        jobs = []
 
-    return jobs + extra_sources_jobs
+    return jobs

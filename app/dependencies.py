@@ -3,6 +3,7 @@ from app.services.external_job_finder_service import (
     ExternalJobFinderService,
     JobberwockyExtraSource,
 )
+from app.services.job_finder_aggregator import JobFinderAgreggator
 from app.settings import settings
 from app.storage import InMemoryStorage, Storage
 
@@ -16,6 +17,15 @@ memory_storage: Storage = InMemoryStorage()
 
 # Initialize job_repository using InMemoryJobRepository
 job_repository: JobRepository = InMemoryJobRepository(storage=memory_storage)
+
+
+job_finder_aggregator: JobFinderAgreggator = JobFinderAgreggator(
+    [external_job_finder_service, job_repository]
+)
+
+
+def get_job_finder_aggregator() -> JobFinderAgreggator:
+    return job_finder_aggregator
 
 
 def get_external_job_finder_service() -> ExternalJobFinderService:
