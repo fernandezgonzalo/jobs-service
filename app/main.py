@@ -3,7 +3,7 @@ from typing import Annotated
 from .schemas import JobIn, JobOut
 from app.dependencies import get_external_job_finder_service
 from app.dependencies import get_job_repository
-from app.services.external_job_finder_service import ExternalJobFinderService
+from app.services.external_job_finder_service import ExternalJobFinderService, JobFinderServiceError
 from app.repository.repository import JobRepository
 
 import requests
@@ -30,7 +30,10 @@ def aggregated_jobs(
     service: Annotated[ExternalJobFinderService, Depends(get_external_job_finder_service)],
     repository: Annotated[JobRepository, Depends(get_job_repository)] 
 ):
-    extra_sources_jobs = service.get_jobs()
+    try:
+        extra_sources_jobs = service.get_jobs()
+    except JobFinderServiceError as e:
+        extra_sources_jobs = []
     jobs = repository.get_all_jobs()
 
     return jobs + extra_sources_jobs

@@ -1,22 +1,9 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.repository.repository import InMemoryJobRepository
 from app.dependencies import get_job_repository, get_external_job_finder_service
-from app.storage import InMemoryStorage
-from app.schemas import JobIn
 from unittest.mock import MagicMock
-
-
-# def get_job_repository_():
-#     try:
-#         memory_storage = InMemoryStorage()
-#         job_repository = InMemoryJobRepository(memory_storage)
-#         yield job_repository
-#     finally:
-#         memory_storage.clean()
-
-# app.dependency_overrides[get_job_repository] = get_job_repository_
+from app.services.external_job_finder_service import JobFinderServiceError
 
 client = TestClient(app)
 
@@ -176,3 +163,31 @@ def test_get_aggregated_job_not_empty(fastapi_dep):
         assert response.status_code == 200
         assert response.json() != []
         assert response.json() == mock_jobs_repo + mock_jobs_service
+
+
+def test_get_aggregated_job_external_exception(fastapi_dep):
+    mock_jobs_repo = [
+        {
+            "name": "sr python",
+            "salary": 1,
+            "country": "arg",
+            "skills": []
+        }
+    ]
+    
+    repo = MagicMock()
+    repo.get_all_jobs.return_value = mock_jobs_repo
+
+    service = MagicMock()
+    service.get_jobs.side_effect = JobFinderServiceError()
+
+    with fastapi_dep(app).override(
+        {
+            get_job_repository: lambda: repo,
+            get_external_job_finder_service: lambda: service
+        }
+    ):
+        response = client.get("/aggregated-jobs")
+        assert response.status_code == 200
+        assert response.json() != []
+        assert response.json() == mock_jobs_repo
