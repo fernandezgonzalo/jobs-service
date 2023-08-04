@@ -9,7 +9,6 @@ readme = "README.md"
 python = "^3.11"
 fastapi = "^0.100.1"
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
-requests = "^2.31.0"
 pydantic-settings = "^2.0.2"
 httpx = "^0.24.1"
 
@@ -22,7 +21,20 @@ pytest = "^7.4.0"
 ipython = "^8.14.0"
 pytest-httpx = "^0.23.1"
 pytest-fastapi-deps = "^0.2.3"
+pytest-cov = "^4.1.0"
+mypy = "^1.4.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 150
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+plugins = [
+  "pydantic.mypy"
+]
