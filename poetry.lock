@@ -814,6 +814,21 @@ pluggy = ">=0.12,<2.0"
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
+name = "pytest-fastapi-deps"
+version = "0.2.3"
+description = "A fixture which allows easy replacement of fastapi dependencies for testing"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "pytest-fastapi-deps-0.2.3.tar.gz", hash = "sha256:b472c147967218d458fec3c7ac29bcad64d81e0c17e8519bb41628b6fac318fa"},
+    {file = "pytest_fastapi_deps-0.2.3-py3-none-any.whl", hash = "sha256:f1f405317623d13e9b5c220a9e962905500cc9a3ce3736dd55aeb0b7d665e3aa"},
+]
+
+[package.dependencies]
+fastapi = "*"
+pytest = "*"
+
+[[package]]
 name = "pytest-httpx"
 version = "0.23.1"
 description = "Send responses to httpx."
@@ -1238,4 +1253,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "b60b35fc0220ed4c7d572f7bd0f149b60027904a106fe7074c0c8aea6233bf6b"
+content-hash = "608efd6f0f9064de982abe4d5837bb2c04922020b5cfb88312dbaf29b6f1d45d"

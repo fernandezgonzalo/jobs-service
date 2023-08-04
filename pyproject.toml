@@ -21,6 +21,7 @@ ruff = "^0.0.282"
 pytest = "^7.4.0"
 ipython = "^8.14.0"
 pytest-httpx = "^0.23.1"
+pytest-fastapi-deps = "^0.2.3"
 
 [build-system]
 requires = ["poetry-core"]
