@@ -1,7 +1,7 @@
 from typing import Protocol
 
 from app.domain.job import Job
-from app.storage import InMemoryStorage, Storage
+from app.storage import Storage
 
 
 class JobRepository(Protocol):
@@ -51,7 +51,7 @@ class InMemoryJobRepository:
 
     """
 
-    def __init__(self, storage: InMemoryStorage):
+    def __init__(self, storage: Storage):
         """Initialize the InMemoryJobRepository.
 
         Args:
@@ -69,7 +69,7 @@ class InMemoryJobRepository:
             job (Job): The Job object to be added.
 
         """
-        self.storage.add(job.model_dump())
+        self.storage.add(job.to_dict())
 
     def get_jobs(self) -> list[Job]:
         """Retrieve all jobs from the repository.

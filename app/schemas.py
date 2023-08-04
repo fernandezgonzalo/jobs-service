@@ -10,3 +10,12 @@ class JobIn(BaseModel):
 
 class JobOut(JobIn):
     pass
+
+
+class JobAlertIn(BaseModel):
+    email: str
+    regex_name: str
+
+
+class JobAlertOut(JobAlertIn):
+    pass

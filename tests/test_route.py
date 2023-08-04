@@ -4,7 +4,7 @@ from app.main import app
 from app.dependencies import get_job_repository, get_external_job_finder_service, get_job_finder_aggregator
 from unittest.mock import MagicMock
 from app.services.external_job_finder_service import JobFinderServiceError
-from app.services.job_finder_aggregator import JobFinderAgreggator
+from app.services.job_finder_aggregator import JobFinderAggregator
 
 client = TestClient(app)
 
@@ -18,6 +18,16 @@ def test_add_new_job():
     }
 
     response = client.post("/add-job", json=new_job)
+    assert response.status_code == 201
+
+
+def test_add_new_job_alert():
+    new_job_alert = {
+        "email": "email1@gmail.com",
+        "regex_name": "asd"
+    }
+
+    response = client.post("/job-alert", json=new_job_alert)
     assert response.status_code == 201
 
 
@@ -47,14 +57,11 @@ def test_get_jobs_non_empty(fastapi_dep):
         "salary": 1
     }
     repo = MagicMock()
-    repo.get_all_jobs.return_value = [new_job]
-    service = MagicMock()
-    service.get_jobs.return_value = []
+    repo.get_jobs.return_value = [new_job]
 
     with fastapi_dep(app).override(
         {
             get_job_repository: lambda: repo,
-            get_external_job_finder_service: lambda: service
         }
     ):
         response = client.get("/jobs")
@@ -69,7 +76,7 @@ def test_get_aggregated_jobs_empty_jobs(fastapi_dep):
     service = MagicMock()
     service.get_jobs.return_value = []
 
-    aggregated = JobFinderAgreggator([repo, service])
+    aggregated = JobFinderAggregator([repo, service])
 
     with fastapi_dep(app).override(
         {
@@ -94,7 +101,7 @@ def test_get_aggregated_jobs_empty_repo(fastapi_dep):
         }
     ]
     service.get_jobs.return_value = mock_jobs
-    aggregated = JobFinderAgreggator([repo, service])
+    aggregated = JobFinderAggregator([repo, service])
 
     with fastapi_dep(app).override(
         {
@@ -121,7 +128,7 @@ def test_get_aggregated_jobs_empty_external_source(fastapi_dep):
     service = MagicMock()
     service.get_jobs.return_value = []
 
-    aggregated = JobFinderAgreggator([repo, service])
+    aggregated = JobFinderAggregator([repo, service])
 
     with fastapi_dep(app).override(
         {
@@ -156,7 +163,7 @@ def test_get_aggregated_job_not_empty(fastapi_dep):
     service = MagicMock()
     service.get_jobs.return_value = mock_jobs_service
 
-    aggregated = JobFinderAgreggator([repo, service])
+    aggregated = JobFinderAggregator([repo, service])
 
     with fastapi_dep(app).override(
         {
@@ -185,7 +192,7 @@ def test_get_aggregated_job_external_exception(fastapi_dep):
     service = MagicMock()
     service.get_jobs.side_effect = JobFinderServiceError()
 
-    aggregated = JobFinderAgreggator([repo, service])
+    aggregated = JobFinderAggregator([repo, service])
 
     with fastapi_dep(app).override(
         {

@@ -14,6 +14,9 @@ ruff:
 fix-ruff:
 	poetry run ruff --fix app
 
+mypy:
+	poetry run mypy app
+
 test:  ## Run tests
 	ENDPOINT_EXTRA_SOURCE_SERVICE=http://test poetry run pytest -vv .
 
@@ -23,5 +26,3 @@ run:  ## Run project
 build:  ## build images
 	docker compose build --no-cache
 
-build2:
-	docker compose

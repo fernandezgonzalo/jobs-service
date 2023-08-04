@@ -31,7 +31,7 @@ def test_add_job(job_repo):
 
 
 def test_get_all_jobs_empty(job_repo):
-    assert job_repo.get_all_jobs() == []
+    assert job_repo.get_jobs() == []
 
 
 def test_get_all_jobs_not_empty(job_repo):
@@ -44,6 +44,6 @@ def test_get_all_jobs_not_empty(job_repo):
 
     job_repo.add(new_job)
 
-    all_jobs = job_repo.get_all_jobs()
+    all_jobs = job_repo.get_jobs()
     assert all_jobs != []
     assert all_jobs[0] == new_job

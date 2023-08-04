@@ -22,7 +22,7 @@ class JobFinderService(Protocol):
         ...
 
 
-class JobFinderAgreggator:
+class JobFinderAggregator:
     """A class to aggregate job data from multiple JobFinder services.
 
     This class takes a list of JobFinder services and aggregates job data from all of them.
